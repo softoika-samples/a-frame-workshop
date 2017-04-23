@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>maze - A-Frame</title>
+  <meta name="description" content="maze - A-Frame">
+  <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+  <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v3.7.0/dist/aframe-extras.min.js"></script>
+  <script src="./js/maze.js"></script>
+
+</head>
+
+  <body>
+    <div onclick="obj=document.getElementById('open').style; obj.display=(obj.display=='none')?'block':'none';">
+      <a style="cursor:pointer;">▼クリックでマップ展開</a>
+    </div>
+
+    <a-scene id="maze-scene" physics>
+      <!-- Player -->
+      <a-entity id="maze-player"
+                camera
+                universal-controls
+                kinematic-body
+                position="0 1.764 0">
+      </a-entity>
+
+      <!-- Ground -->
+      <a-grid id="maze-grid" width="1000" height="1000" static-body></a-grid>
+
+      <!-- Lighting -->
+      <a-light type="ambient" color="#bbb"></a-light>
+      <a-light color="#ccc" position="0 30 0" distance="100" intensity="0.4" type="point"></a-light>
+      <a-light color="#ccc" position="3 10 -10" distance="50" intensity="0.4" type="point"></a-light>
+    </a-scene>
+  </body>
+
+  <script>
+
+  var map = makeMaze();   // 迷路ロジックの結果（二次元配列）。1が壁を示す。
+  var width = 3;          // 壁の幅を設定
+  var posX = -1 * width;  // 最初の壁のX座標
+  var posZ = -1 * width;  // 最初の壁のZ座標
+
+  /* ハンズオン：A-SCENEエンティティの取得 */
+  var sceneEntity = document.querySelector("#maze-scene");
+
+
+  // 迷路図作成
+  document.write('<div id="open" style="display:none; clear:both; position:absolute; top:20px; left:0px; z-index:999; font-family: monospace;">');
+  for (var z = 0; z < map.length; z++) {
+    for (var x = 0; x < map[0].length; x++) {
+
+      // 壁の場合
+      if (map[z][x] == 1) {
+
+        /* ハンズオン：A-BOXで壁を作ってA-SCENEに追加する */
+        var wall = document.createElement("a-box");
+        wall.setAttribute("position", posX + " 0 " + posZ);
+        wall.setAttribute("color", "#00FF00");
+        sceneEntity.appendChild(wall);
+
+
+
+        if (x == map[0].length - 1) {
+          document.write('■<br>');
+          posX = -1 * width;
+          posZ = posZ + width;
+        } else {
+          document.write('■');
+          posX = posX + width;
+        }
+
+      // 壁ではない場合
+      } else {
+        document.write('□');
+        posX = posX + width;
+      }
+
+    }
+  }
+  document.write('</div>');
+
+</script>
+</html>
